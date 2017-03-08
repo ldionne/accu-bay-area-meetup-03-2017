@@ -1,4 +1,4 @@
-## C++ metaprogramming in C++14
+## Metaprogramming in C++14
 
 This repository contains my [reveal.js][]-based presentation on metaprogramming
 for the March 2017 ACCU Bay Area C++ Meetup.

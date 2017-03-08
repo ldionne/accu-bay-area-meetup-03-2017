@@ -1,9 +1,6 @@
-// Copyright Louis Dionne 2016
+// Copyright Louis Dionne 2017
 // Distributed under the Boost Software License, Version 1.0.
 
-#include <brigand/brigand.hpp>
-
-#include <array>
 #include <cstddef>
 
 
@@ -18,61 +15,28 @@ struct integral_constant {
 };
 // end-sample
 
-namespace sample_classic {
+namespace classic {
 // sample(operator-classic)
 template <typename X, typename Y>
-struct plus;
+using plus = integral_constant<
+  decltype(X::value + Y::value),
+  X::value + Y::value
+>;
 
-template <typename T, T x, T y>
-struct plus<integral_constant<T, x>, integral_constant<T, y>>
-  : integral_constant<T, x + y>
-{ };
+using result = plus<integral_constant<int, 3>,
+                    integral_constant<int, 4>>;
 // end-sample
-
-// sample(multiply_dimensions-classic)
-template <typename D1, typename D2>
-struct multiply_dimensions;
-
-template <typename ...D1, typename ...D2>
-struct multiply_dimensions<brigand::list<D1...>, brigand::list<D2...>>{
-  using type = brigand::list<typename plus<D1, D2>::type...>;
-};
-// end-sample
-
-static_assert(std::is_same<
-  multiply_dimensions<
-    brigand::list<integral_constant<int, 1>, integral_constant<int, 2>>,
-    brigand::list<integral_constant<int, 3>, integral_constant<int, 0>>
-  >::type,
-  brigand::list<integral_constant<int, 4>, integral_constant<int, 2>>
->{});
 }
 
+namespace hana_style {
 // sample(operator-hana)
 template <typename T, T x, T y>
 constexpr auto
 operator+(integral_constant<T, x>, integral_constant<T, y>)
 { return integral_constant<T, x + y>{}; }
+
+auto result = integral_constant<int, 3>{} + integral_constant<int, 4>{};
 // end-sample
-
-namespace sample_hana {
-// sample(multiply_dimensions-hana)
-template <typename D1, typename D2>
-struct multiply_dimensions;
-
-template <typename ...D1, typename ...D2>
-struct multiply_dimensions<brigand::list<D1...>, brigand::list<D2...>>{
-  using type = brigand::list<decltype(D1{} + D2{})...>;
-};
-// end-sample
-
-static_assert(std::is_same<
-  multiply_dimensions<
-    brigand::list<integral_constant<int, 1>, integral_constant<int, 2>>,
-    brigand::list<integral_constant<int, 3>, integral_constant<int, 0>>
-  >::type,
-  brigand::list<integral_constant<int, 4>, integral_constant<int, 2>>
->{}, "");
 }
 
 constexpr int to_int(char c) {
@@ -101,18 +65,6 @@ constexpr auto operator"" _c() {
 }
 
 auto n = 10_c + 30_c; // n is integral_constant<int, 40>
-// end-sample
-
-// sample(use-literal-operator)
-template <typename Size>
-auto array_iota(Size size) {
-  std::array<int, size> array; // Yes, this is valid!
-  for (int i = 0; i < size; ++i)
-    array[i] = i;
-  return array;
-}
-
-auto array = array_iota(10_c + 30_c);
 // end-sample
 
 int main() { }
