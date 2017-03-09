@@ -532,6 +532,11 @@ This is what I meant by "Seamless integration of compile-time and runtime"
 
 ### Hana shines when combining compile-time and runtime
 
+====================
+
+## Another, live example
+### No security net
+
 ==============================================================================
 
 ## The future
@@ -608,6 +613,29 @@ std::ostream& to_json(std::ostream& out, T const& v) {
   }
   return out;
 }
+```
+
+====================
+
+### The future of type-level computations?
+
+```c++
+constexpr std::vector<std::meta::type>
+sort_by_alignment(std::vector<std::meta::type> types) {
+  std::sort(v.begin(), v.end(), [](std::meta::type t,
+                                   std::meta::type u) {
+    return t.alignment() < u.alignment();
+  });
+  return v;
+}
+
+constexpr std::vector<std::meta::type> types{
+  reflexpr(Foo), reflexpr(Bar), reflexpr(Baz)
+};
+
+constexpr std::vector<std:meta::type> sorted = sort_by_alignment(types);
+
+std::tuple<typename(sorted)...> tuple{...};
 ```
 
 ====================
